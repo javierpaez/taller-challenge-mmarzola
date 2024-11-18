@@ -1,52 +1,44 @@
 class BooksController < ApplicationController
 
-  before_action :validate_book_params, only: :create
-
   # def index
-  #   @ = .all
+  #   TODO
   # end
 
   # def show
-  #   @ = Book.find()
+  #   TODO
   # end
 
   def create
-    @book = Book.new(title: params[:title], author: params[:author], publication_year: params[:publication_year])
+    @book = Book.new(book_params)
     if @book.save
-      flash[:success] = "Book successfully created"
-      redirect_to @book, status: 201
+      render json: { message: "Book successfully created" }, status: 201
     else
-      flash[:error] = "Something went wrong"
-      render 'new'
+      render json: { message: "Something went wrong" }, status: 400
     end
   end
 
-  # def def update
-  #   @book = Book.find(params[:id])
-  #     if @book.update_attributes(params[:book])
-  #       flash[:success] = "Book was successfully updated"
-  #       redirect_to @book
-  #     else
-  #       flash[:error] = "Something went wrong"
-  #       render 'edit'
-  #     end
-  # end
+  def update
+    @book = Book.find(params[:id])
+    if @book&.update(book_params)
+      render json: { message: "Book successfully updated" }, status: 202
+    else
+      render json: { message: "Something went wrong" }, status: 400
+    end
+  end
 
 
-  # def destroy
-  #   @book = Book.find(params[:id])
-  #   if @book.destroy
-  #     flash[:success] = 'Book was successfully deleted.'
-  #     redirect_to books_url
-  #   else
-  #     flash[:error] = 'Something went wrong'
-  #     redirect_to books_url
-  #   end
-  # end
+  def destroy
+    @book = Book.find(params[:id])
+    if @book&.destroy
+      render json: { message: "Book successfully deleted" }, status: 202
+    else
+      render json: { message: "Something went wrong" }, status: 400
+    end
+  end
 
   private
 
-  def validate_book_params
-    params.require([:title, :author, :publication_year])
+  def book_params
+    params.require(:book).permit(:title, :author, :publication_year)
   end
 end
