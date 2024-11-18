@@ -1,12 +1,20 @@
 class BooksController < ApplicationController
 
-  # def index
-  #   TODO
-  # end
+  def index
+    @books = Book.all.order(rating: :desc).order(publication_date: :desc)
+    if @books
+      render json: { books: @books }, status: 201
+    end
+  end
 
-  # def show
-  #   TODO
-  # end
+  def show
+    @book = Book.find(params[:id])
+    if @book
+      render json: { book: @book }, status: 202
+    else
+      render json: { message: "Something went wrong" }, status: 400
+    end
+  end
 
   def create
     @book = Book.new(book_params)
@@ -39,6 +47,6 @@ class BooksController < ApplicationController
   private
 
   def book_params
-    params.require(:book).permit(:title, :author, :publication_year)
+    params.require(:book).permit(:title, :author, :publication_date)
   end
 end
